@@ -8,7 +8,7 @@ import { Password } from 'primereact/password';
 import { LayoutContext } from '../context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
-import '../styles/Login.module.css'
+import '../styles/login.module.css'
 
 
 const LoginPage = () => {
