@@ -1,4 +1,8 @@
-# Iniciar projeto para visualizar de Dashboards
+# Painel de Gestão de Dashboards
+
+Este painel foi desenvolvido para facilitar a gestão dos dashboards criados pela empresa. Nele, os usuários poderão acessar links de relatórios de forma pública, sem a necessidade de licenças. Além disso, o painel centraliza todos os conceitos relevantes, permitindo que os usuários realizem pesquisas e se mantenham atualizados sobre as últimas informações e alterações.
+
+# Sobre a criação do projeto para visualização dos Dashboards
 
 Criar projeto
 
