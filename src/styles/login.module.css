@@ -1,0 +1,14 @@
+.custom-checkbox .p-checkbox-box {
+    border-color: #4CBEA2;
+    background-color: #ffff;
+}
+
+.custom-checkbox .p-checkbox-box:checked {
+    background-color: #4CBEA2;
+    border-color: #4CBEA2;
+}
+
+.custom-checkbox .p-checkbox-icon {
+    color: #4CBEA2;
+
+}
