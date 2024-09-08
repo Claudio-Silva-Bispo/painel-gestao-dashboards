@@ -18,6 +18,7 @@ const Documentacao = () => {
                         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                     </p>
                 </TabPanel>
+
                 <TabPanel header="Emissões">
                     <p className="m-0">
                         Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam,
@@ -26,6 +27,7 @@ const Documentacao = () => {
                         ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
                     </p>
                 </TabPanel>
+
                 <TabPanel header="Gestão Comercial">
                     <p className="m-0">
                         At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti
@@ -34,6 +36,16 @@ const Documentacao = () => {
                         Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
                     </p>
                 </TabPanel>
+
+                <TabPanel header="Desenvolvedores">
+                    <p className="m-0">
+                        Para visualizar a documentação com end-points
+
+                        <a href="http://localhost:3000/swagger"> Clique aqui</a>
+                    </p>
+                </TabPanel>
+
+
             </TabView>
         </div>
     );

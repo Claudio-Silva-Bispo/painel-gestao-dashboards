@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
+
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
@@ -7,29 +8,39 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
-import React, { useEffect, useRef, useState } from 'react';
-import { Demo } from '@/types';
+import React, { useRef, useState, useEffect } from 'react';
+import axios from 'axios';
+import { Column } from 'primereact/column';
 
 const Cadastro = () => {
-    let emptyUser: Demo.User = {
+    const emptyUser = {
         id: '',
         name: '',
-        email: ''
+        email: '',
+        password: ''
     };
 
-    const [users, setUsers] = useState(null);
+    const [users, setUsers] = useState<any[]>([]);
     const [userDialog, setUserDialog] = useState(false);
-    const [deleteUsersDialog, setDeleteUsersDialog] = useState(false);
-    const [user, setUser] = useState<Demo.User>(emptyUser);
-    const [selectedUsers, setSelectedUsers] = useState(null);
+    const [user, setUser] = useState<any>(emptyUser);
     const [submitted, setSubmitted] = useState(false);
-    const [globalFilter, setGlobalFilter] = useState('');
+    const [loading, setLoading] = useState(false);
     const toast = useRef<Toast>(null);
-    const dt = useRef<DataTable<any>>(null);
 
     useEffect(() => {
-        // UserService.getUsers().then((data) => setUsers(data as any));
+        fetchUsers();
     }, []);
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('/api/buscarUsuarios');
+            setUsers(response.data);
+        } catch (error) {
+            console.error('Erro ao buscar usuários:', error);
+        }
+        setLoading(false);
+    };
 
     const openNew = () => {
         setUser(emptyUser);
@@ -42,72 +53,6 @@ const Cadastro = () => {
         setUserDialog(false);
     };
 
-    const createId = () => {
-        return Math.random().toString(36).substr(2, 9); // Gera um ID aleatório
-    };
-
-    const saveUser = () => {
-        setSubmitted(true);
-
-        if (user.name.trim()) {
-            let _users = [...(users as any)];
-            let _user = { ...user };
-            if (user.id) {
-                const index = findIndexByUserId(user.id);
-
-                _users[index] = _user;
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'User Updated',
-                    life: 3000
-                });
-            } else {
-                _user.id = createId();
-                _users.push(_user);
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'User Created',
-                    life: 3000
-                });
-            }
-
-            setUsers(_users as any);
-            setUserDialog(false);
-            setUser(emptyUser);
-        }
-    };
-
-    const findIndexByUserId = (id: string) => {
-        let index = -1;
-        for (let i = 0; i < (users as any)?.length; i++) {
-            if ((users as any)[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    };
-
-    const confirmDeleteSelectedUsers = () => {
-        setDeleteUsersDialog(true);
-    };
-
-    const deleteSelectedUsers = () => {
-        let _users = (users as any)?.filter((val: any) => !(selectedUsers as any)?.includes(val));
-        setUsers(_users);
-        setDeleteUsersDialog(false);
-        setSelectedUsers(null);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Users Deleted',
-            life: 3000
-        });
-    };
-
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
         const val = (e.target && e.target.value) || '';
         let _user = { ...user };
@@ -116,21 +61,114 @@ const Cadastro = () => {
         setUser(_user);
     };
 
-    const leftToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <div className="my-2">
-                    <Button label="Novo" icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
-                    <Button label="Deletar" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelectedUsers} disabled={!selectedUsers || !(selectedUsers as any).length} />
-                </div>
-            </React.Fragment>
-        );
+    const saveUser = async () => {
+        setSubmitted(true);
+
+        console.log(user);
+
+        // Enviar dados para o banco sem o id
+        const { id, ...dataToSend} = user;
+
+        console.log(dataToSend);
+
+        if (dataToSend.name.trim() && dataToSend.email.trim() && dataToSend.password.trim()) {
+            try {
+                const response = await axios.post('/api/criarUsuario', dataToSend);
+                const newUser = response.data;
+
+                setUsers([...users, newUser]);
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Usuário criado com sucesso',
+                    life: 3000
+                });
+
+                setUserDialog(false);
+                setUser(emptyUser);
+            } catch (error) {
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Falha ao salvar o usuário',
+                    life: 3000
+                });
+            }
+        }
+    };
+
+    const updateUser = async () => {
+        setSubmitted(true);
+
+        // Verifique se os campos obrigatórios estão preenchidos
+        if (user.name.trim() && user.email.trim() && user.password.trim()) {
+            try {
+                // Enviar dados para a API com o ID
+                const { id, ...dataToSend } = user; // Extraímos o ID e enviamos o restante dos dados
+                const response = await axios.put('/api/atualizarUsuario', { id, ...dataToSend });
+
+                const updatedUser = response.data;
+
+                // Atualiza a lista de usuários
+                setUsers(users.map(u => (u.id === updatedUser.id ? updatedUser : u)));
+
+                // Mensagem de sucesso
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Usuário atualizado com sucesso',
+                    life: 3000
+                });
+
+                // Fechar o diálogo e resetar o usuário
+                setUserDialog(false);
+                setUser(emptyUser);
+            } catch (error) {
+                console.error('Erro ao atualizar usuário:', error);
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Falha ao atualizar o usuário',
+                    life: 3000
+                });
+            }
+        }
+    };
+
+    const deleteUser = async (userId: string) => {
+        console.log("ID do usuário a ser excluído:", userId); // Log para verificar o ID
+        if (confirm("Tem certeza que deseja deletar este usuário?")) {
+            try {
+                const response = await axios.delete('/api/excluirUsuario', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    data: { id: userId } // Enviando o ID no corpo da requisição
+                });
+                // Atualiza a lista de usuários após a exclusão
+                setUsers(users.filter(user => user._id !== userId));
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Usuário deletado com sucesso',
+                    life: 3000
+                });
+            } catch (error) {
+                console.error('Erro ao deletar usuário:', error); // Log do erro
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Falha ao deletar o usuário',
+                    life: 3000
+                });
+            }
+        }
     };
 
     const userDialogFooter = (
         <>
             <Button label="Cancelar" icon="pi pi-times" text onClick={hideDialog} />
-            <Button label="Salvar" icon="pi pi-check" text onClick={saveUser} />
+            <Button label="Salvar" icon="pi pi-check" text onClick={user.id ? updateUser : saveUser} />
         </>
     );
 
@@ -139,42 +177,53 @@ const Cadastro = () => {
             <div className="col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="mb-4" left={leftToolbarTemplate}></Toolbar>
+                    <Toolbar className="mb-4" left={() => (
+                        <React.Fragment>
+                            <div className="my-2">
+                                <Button label="Novo" icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
+                                <Button label="Atualizar Base" icon="pi pi-refresh" severity="info" className="mr-2" onClick={fetchUsers} />
+                                <Column body={(rowData) => (
+                                    <Button label="Deletar" icon="pi pi-trash" className="p-button-danger" onClick={() => deleteUser(rowData._id)} />
+                                )} />
+                            </div>
+                        </React.Fragment>
+                    )}></Toolbar>
 
                     <DataTable
-                        ref={dt}
                         value={users}
-                        selection={selectedUsers}
-                        onSelectionChange={(e) => setSelectedUsers(e.value as any)}
-                        dataKey="id"
                         paginator
                         rows={10}
-                        rowsPerPageOptions={[5, 10, 25]}
                         className="datatable-responsive"
-                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
-                        globalFilter={globalFilter}
-                        emptyMessage="No users found."
-                        responsiveLayout="scroll"
+                        emptyMessage="Nenhum usuário encontrado."
+                        loading={loading}
                     >
-                        {/* Colunas podem ser adicionadas aqui conforme necessário */}
+                        <Column field="name" header="Nome" />
+                        <Column field="email" header="Email" />
+                        <Column body={(rowData) => (
+                            <Button label="Editar" icon="pi pi-pencil" onClick={() => {
+                                setUser(rowData);
+                                setUserDialog(true);
+                            }} />
+                        )} />
+                        <Column body={(rowData) => (
+                            <Button label="Deletar" icon="pi pi-trash" className="p-button-danger" onClick={() => deleteUser(rowData.id)} />
+                        )} />
                     </DataTable>
 
-                    <Dialog visible={userDialog} style={{ width: '450px' }} header="User Details" modal className="p-fluid" footer={userDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={userDialog} style={{ width: '450px' }} header="Detalhes do Usuário" modal className="p-fluid" footer={userDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="name">Name</label>
+                            <label htmlFor="name">Nome</label>
                             <InputText
                                 id="name"
                                 value={user.name}
                                 onChange={(e) => onInputChange(e, 'name')}
                                 required
                                 autoFocus
-                                className={classNames({
-                                    'p-invalid': submitted && !user.name
-                                })}
+                                className={classNames({ 'p-invalid': submitted && !user.name })}
                             />
-                            {submitted && !user.name && <small className="p-invalid">Name is required.</small>}
+                            {submitted && !user.name && <small className="p-invalid">Nome é obrigatório.</small>}
                         </div>
+
                         <div className="field">
                             <label htmlFor="email">Email</label>
                             <InputText
@@ -182,13 +231,23 @@ const Cadastro = () => {
                                 value={user.email}
                                 onChange={(e) => onInputChange(e, 'email')}
                                 required
-                                className={classNames({
-                                    'p-invalid': submitted && !user.email
-                                })}
+                                className={classNames({ 'p-invalid': submitted && !user.email })}
                             />
-                            {submitted && !user.email && <small className="p-invalid">Email is required.</small>}
+                            {submitted && !user.email && <small className="p-invalid">Email é obrigatório.</small>}
                         </div>
-                        {/* Adicione outros campos conforme necessário */}
+
+                        <div className="field">
+                            <label htmlFor="password">Senha</label>
+                            <InputText
+                                id="password"
+                                type="password"
+                                value={user.password}
+                                onChange={(e) => onInputChange(e, 'password')}
+                                required
+                                className={classNames({ 'p-invalid': submitted && !user.password })}
+                            />
+                            {submitted && !user.password && <small className="p-invalid">Senha é obrigatória.</small>}
+                        </div>
                     </Dialog>
                 </div>
             </div>
