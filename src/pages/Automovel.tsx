@@ -54,7 +54,7 @@ export default function FiltroBasico() {
 
     const fetchRelatorios = async () => {
         try {
-            const response = await axios.get('https://painel-gestao-dashboards.vercel.app/Automovel/api/buscarRelatorios');
+            const response = await axios.get('/api/buscarRelatorios');
             setRelatorios(response.data);
             setCarregando(false);
         } catch (error) {
@@ -121,7 +121,7 @@ export default function FiltroBasico() {
 
         if (dataToSend.name.trim() && dataToSend.responsible.trim() && dataToSend.data.trim() && dataToSend.link.trim()) {
             try {
-                const response = await axios.post('https://painel-gestao-dashboards.vercel.app/Automovel/api/criarRelatorio', dataToSend);
+                const response = await axios.post('/api/criarRelatorio', dataToSend);
                 const newRelatorio = response.data;
 
                 setRelatorios([...relatorios, newRelatorio]);
@@ -150,7 +150,7 @@ export default function FiltroBasico() {
         if (relatorio.name.trim() && relatorio.responsible.trim() && relatorio.data.trim() && relatorio.link.trim()) {
             try {
                 const { id, ...dataToSend } = relatorio; // Extraímos o ID aqui
-                const response = await axios.put('https://painel-gestao-dashboards.vercel.app/Automovel/api/atualizarRelatorio', { id, ...dataToSend });
+                const response = await axios.put('/api/atualizarRelatorio', { id, ...dataToSend });
 
                 const updatedRelatorio = response.data;
 
@@ -177,7 +177,7 @@ export default function FiltroBasico() {
     const excluirRelatorio = async (id: string) => {
         if (confirm("Tem certeza que deseja deletar este relatório?")) {
             try {
-                await axios.delete('https://painel-gestao-dashboards.vercel.app/Automovel/api/excluirRelatorio', {
+                await axios.delete('/api/excluirRelatorio', {
                     data: { id } // Enviando o ID no corpo
                 });
                 setRelatorios(relatorios.filter(r => r.id !== id));
@@ -208,7 +208,7 @@ export default function FiltroBasico() {
 
     const abrirRelatorio = async (id: string) => {
         try {
-            const response = await axios.post('https://painel-gestao-dashboards.vercel.app/Automovel/api/buscarRelatorio', { id });
+            const response = await axios.post('/api/buscarRelatorio', { id });
             const url = response.data.link; // Obtém o link da resposta
             setRelatorioUrl(url); // Atualiza o estado com o link do relatório
         } catch (error) {
