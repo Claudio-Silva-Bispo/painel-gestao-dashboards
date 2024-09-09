@@ -13,8 +13,7 @@ import { Toolbar } from 'primereact/toolbar';
 import 'primereact/resources/themes/saga-blue/theme.css'; // ou outro tema
 import 'primereact/resources/primereact.min.css'; // CSS do PrimeReact
 import 'primeicons/primeicons.css'; // Ícones
-import { text } from 'stream/consumers';
-import { color } from 'chart.js/helpers';
+
 
 interface Relatorio {
     id: string;

@@ -495,4 +495,4 @@ arquivo
     // Exportar o app para ser usado em outros arquivos
     export default app;
 ```
-teste
+
