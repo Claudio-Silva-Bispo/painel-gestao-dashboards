@@ -34,7 +34,7 @@ const Cadastro = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('/api/buscarUsuarios');
+            const response = await axios.get('https://painel-gestao-dashboards.vercel.app/Cadastro/api/buscarUsuarios');
             setUsers(response.data);
         } catch (error) {
             console.error('Erro ao buscar usuários:', error);
@@ -73,7 +73,7 @@ const Cadastro = () => {
 
         if (dataToSend.name.trim() && dataToSend.email.trim() && dataToSend.password.trim()) {
             try {
-                const response = await axios.post('/api/criarUsuario', dataToSend);
+                const response = await axios.post('https://painel-gestao-dashboards.vercel.app/Cadastro/api/criarUsuario', dataToSend);
                 const newUser = response.data;
 
                 setUsers([...users, newUser]);
@@ -105,7 +105,7 @@ const Cadastro = () => {
             try {
                 // Enviar dados para a API com o ID
                 const { id, ...dataToSend } = user; // Extraímos o ID e enviamos o restante dos dados
-                const response = await axios.put('/api/atualizarUsuario', { id, ...dataToSend });
+                const response = await axios.put('https://painel-gestao-dashboards.vercel.app/Cadastro/api/atualizarUsuario', { id, ...dataToSend });
 
                 const updatedUser = response.data;
 
@@ -139,7 +139,7 @@ const Cadastro = () => {
         console.log("ID do usuário a ser excluído:", userId); // Log para verificar o ID
         if (confirm("Tem certeza que deseja deletar este usuário?")) {
             try {
-                const response = await axios.delete('/api/excluirUsuario', {
+                const response = await axios.delete('https://painel-gestao-dashboards.vercel.app/Cadastro/api/excluirUsuario', {
                     headers: {
                         'Content-Type': 'application/json',
                     },
