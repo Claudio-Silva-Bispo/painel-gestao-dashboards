@@ -177,15 +177,31 @@ const Cadastro = () => {
             <div className="col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="mb-4" left={() => (
+                    <Toolbar className="mb-4 w-full" left={() => (
                         <React.Fragment>
-                            <div className="my-2">
-                                <Button label="Novo" icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
-                                <Button label="Atualizar Base" icon="pi pi-refresh" severity="info" className="mr-2" onClick={fetchUsers} />
-                                <Column body={(rowData) => (
-                                    <Button label="Deletar" icon="pi pi-trash" className="p-button-danger" onClick={() => deleteUser(rowData._id)} />
-                                )} />
+                            <div className="my-2 min-w-full flex">
+
+                                <Button
+                                label="Novo"
+                                icon="pi pi-plus"
+                                severity="success"
+                                className="mr-2 p-3 w-2/3 text-xl"
+                                onClick={openNew}
+                                style={{ backgroundColor: '#4CAF50', color: 'white' }}/>
+
+                                <Button
+                                label="Atualizar Base"
+                                icon="pi pi-refresh"
+                                severity="info"
+                                className=" p-3 w-96 text-xl"
+                                onClick={fetchUsers}
+                                style={{ backgroundColor: '#e1c511', color: 'white' }} />
+
+
                             </div>
+                            {/*<Column body={(rowData) => (
+                                    <Button label="Deletar" icon="pi pi-trash" className="p-button-danger" onClick={() => deleteUser(rowData._id)} />
+                                )} />*/}
                         </React.Fragment>
                     )}></Toolbar>
 

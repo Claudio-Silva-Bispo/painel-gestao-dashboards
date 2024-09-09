@@ -13,6 +13,8 @@ import { Toolbar } from 'primereact/toolbar';
 import 'primereact/resources/themes/saga-blue/theme.css'; // ou outro tema
 import 'primereact/resources/primereact.min.css'; // CSS do PrimeReact
 import 'primeicons/primeicons.css'; // Ícones
+import { text } from 'stream/consumers';
+import { color } from 'chart.js/helpers';
 
 interface Relatorio {
     id: string;
@@ -73,12 +75,23 @@ export default function FiltroBasico() {
     const renderizarCabecalho = () => {
         return (
             <div className="flex justify-content-between">
-                <InputText value={valorFiltroGlobal} onChange={aoMudarFiltroGlobal} placeholder="Pesquisar..." />
-                <Toolbar className="mb-4" left={() => (
-                    <>
-                        <Button label="Novo Relatório" icon="pi pi-plus" onClick={abrirNovoRelatorio} />
-                        <Button label="Atualizar Base" icon="pi pi-refresh" onClick={fetchRelatorios} />
-                    </>
+                <InputText className='text-left w-1/3 pl-10 text-xl' value={valorFiltroGlobal} onChange={aoMudarFiltroGlobal} placeholder="Pesquisar..." />
+                <Toolbar  left={() => (
+                    <div className='flex gap-5'>
+                        <Button
+                        label="Novo Relatório"
+                        icon="pi pi-plus"
+                        onClick={abrirNovoRelatorio}
+                        className='p-3'
+                        style={{ backgroundColor: '#4CAF50', color: 'white' }}/>
+
+                        <Button
+                        label="Atualizar Base"
+                        icon="pi pi-refresh"
+                        onClick={fetchRelatorios}
+                        className='p-3'
+                        style={{ backgroundColor: '#e1c511', color: 'white' }} />
+                    </div>
                 )} />
             </div>
         );
@@ -218,6 +231,7 @@ export default function FiltroBasico() {
                 globalFilterFields={['name', 'responsible']}
                 header={cabecalho}
                 emptyMessage="Nenhum relatório encontrado."
+
             >
                 <Column field="name" header="Nome do Relatório" filter filterPlaceholder="Pesquisar por nome" />
 
@@ -231,7 +245,7 @@ export default function FiltroBasico() {
                     icon="pi pi-search"
                     onClick={() =>
                     abrirRelatorio(rowData.id)}
-                    className='custom-button p-2 w-1/3'
+                    className='custom-button p-2 w-2/3'
                     style={{ backgroundColor: '#4CAF50', color: 'white' }}  />
                 )} />
 
@@ -243,7 +257,7 @@ export default function FiltroBasico() {
                         setRelatorio(rowData);
                         setRelatorioDialog(true);
                     }}
-                    className='custom-button p-2 w-2/6'
+                    className='custom-button p-2 w-2/3'
                     style={{ backgroundColor: '#e1c511', color: 'white' }}/>
                 )} />
 
@@ -253,7 +267,7 @@ export default function FiltroBasico() {
                     icon="pi pi-trash"
                     onClick={() => excluirRelatorio(rowData.id)}
                     severity="danger"
-                    className='custom-button p-2 w-3/6'
+                    className='custom-button p-2 w-2/3'
                     style={{ backgroundColor: '#e11b11', color: 'white' }}/>
                 )} />
             </DataTable>
